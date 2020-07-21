@@ -51,9 +51,9 @@ struct BgemmKernel<ruy::Path::kNeonDotprod, LhsScalar, RhsScalar, DstScalar,
   }
 };
 
-#if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) && RUY_PLATFORM(NEON_64)
+#if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) && RUY_PLATFORM(NEON_32)
 // A BGEMM kernel for ARM64 Neon.
-#include "bgemm_kernels_arm64.h"
+#include "bgemm_kernels_arm32.h"
 
 // specialized kernel for 32-bit bitpacking, float output and 32-bit accumulator
 template <>
@@ -75,6 +75,11 @@ struct BgemmKernel<ruy::Path::kNeon, std::uint32_t, std::uint32_t, float,
     BinaryKernelNeonOutOfOrder32BP4x4(params);
   }
 };
+#endif
+
+#if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) && RUY_PLATFORM(NEON_64)
+// A BGEMM kernel for ARM64 Neon.
+#include "bgemm_kernels_arm64.h"
 
 // Specialized kernel for 64-bit bitpacking, 16-bit accumulators, and float
 // output.
