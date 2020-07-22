@@ -534,3 +534,4 @@ void BinaryKernelNeonOutOfOrder32BP4x4(BinaryKernelParams<4, 4, std::uint32_t>& 
 #undef RUY_OFFSET_DST_BASE_PTR
 
 #endif  // RUY_PLATFORM(NEON_64) && RUY_OPT_ENABLED(RUY_OPT_ASM)
+#endif  // COMPUTE_EGNINE_TFLITE_KERNELS_BGEMM_KERNELS_ARM32_H_
