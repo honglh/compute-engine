@@ -1,5 +1,6 @@
 #ifndef COMPUTE_EGNINE_TFLITE_KERNELS_BGEMM_KERNELS_ARM32_H_
 #define COMPUTE_EGNINE_TFLITE_KERNELS_BGEMM_KERNELS_ARM32_H_
+
 #include <cstdint>
 
 #include "bgemm_kernels_common.h"
