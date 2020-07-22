@@ -51,9 +51,15 @@ struct BgemmKernel<ruy::Path::kNeonDotprod, LhsScalar, RhsScalar, DstScalar,
   }
 };
 
-#if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) && RUY_PLATFORM(NEON_32)
-// A BGEMM kernel for ARM64 Neon.
+#if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) 
+#if RUY_PLATFORM(NEON_32)
+// A BGEMM kernel for ARM32 Neon.
 #include "bgemm_kernels_arm32.h"
+#elif RUY_PLATFORM(NEON_64)
+// A BGEMM kernel for ARM64 Neon.
+#include "bgemm_kernels_arm64.h"
+#endif
+#endif
 
 // specialized kernel for 32-bit bitpacking, float output and 32-bit accumulator
 template <>
@@ -75,11 +81,29 @@ struct BgemmKernel<ruy::Path::kNeon, std::uint32_t, std::uint32_t, float,
     BinaryKernelNeonOutOfOrder32BP4x4(params);
   }
 };
-#endif
 
 #if RUY_PLATFORM(NEON) && RUY_OPT_ENABLED(RUY_OPT_ASM) && RUY_PLATFORM(NEON_64)
-// A BGEMM kernel for ARM64 Neon.
-#include "bgemm_kernels_arm64.h"
+
+// specialized kernel for 32-bit bitpacking, float output and 32-bit accumulator
+template <>
+struct BgemmKernel<ruy::Path::kNeon, std::uint32_t, std::uint32_t, float,
+                   BinaryBasicSpec<std::int32_t, float>> {
+  Tuning tuning = Tuning::kAuto;
+  using LhsLayout = FixedKernelLayout<Order::kColMajor, 4, 4>;
+  using RhsLayout = FixedKernelLayout<Order::kColMajor, 4, 4>;
+  explicit BgemmKernel(Tuning tuning_) : tuning(tuning_) {}
+  void Run(const ruy::PackedMatrix<std::uint32_t>& lhs,
+           const ruy::PackedMatrix<std::uint32_t>& rhs,
+           const BinaryBasicSpec<std::int32_t /* accum. scalar */, float>& spec,
+           int start_row, int start_col, int end_row, int end_col,
+           ruy::Matrix<float>* dst) const {
+    BinaryKernelParams<LhsLayout::kCols, RhsLayout::kCols, std::uint32_t>
+        params;
+    MakeBinaryKernelParams(lhs, rhs, spec, start_row, start_col, end_row,
+                           end_col, dst, &params);
+    BinaryKernelNeonOutOfOrder32BP4x4(params);
+  }
+};
 
 // Specialized kernel for 64-bit bitpacking, 16-bit accumulators, and float
 // output.
