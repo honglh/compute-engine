@@ -30,7 +30,6 @@ using namespace ruy;
   "vpaddl.s8 q12, q12\n"               \
   "vpadal.s16 " #Vd" , q12\n"
 
-
 // clang-format on
 
 #define RUY_OFFSET_LHS_BASE_PTR 0
@@ -60,7 +59,6 @@ using namespace ruy;
 #define RUY_STACK_OFFSET_COL 48
 #define RUY_STACK_OFFSET_LHS_COL_PTR 64
 #define RUY_STACK_OFFSET_RHS_COL_PTR 80
-
 
 template <typename Params>
 void CheckOffsetsInKernelParams32BP(const Params&) {
@@ -126,7 +124,8 @@ void CheckOffsetsInKernelParams32BP(const Params&) {
 
 // clang-format on
 
-void BinaryKernelNeonOutOfOrder32BP4x4(BinaryKernelParams<4, 4, std::uint32_t>& params) {
+void BinaryKernelNeonOutOfOrder32BP4x4(
+    BinaryKernelParams<4, 4, std::uint32_t>& params) {
   CheckOffsetsInKernelParams32BP(params);
   ruy::profiler::ScopeLabel label(
       "Binary Kernel (4x4) 32BP (kNeon, optimized for out-of-order cores)");
@@ -185,7 +184,7 @@ void BinaryKernelNeonOutOfOrder32BP4x4(BinaryKernelParams<4, 4, std::uint32_t>& 
       // LHS and RHS data for. The RHS is stored in col-wise. Therefore, for 32-bit elements,
       // one register can hold 4 levels of depth.
       "mov r1, #4\n"
-#if 1
+
       // Main loop of the whole GEMM, over rows and columns of the
       // destination matrix.
       "1:\n"
@@ -503,7 +502,6 @@ void BinaryKernelNeonOutOfOrder32BP4x4(BinaryKernelParams<4, 4, std::uint32_t>& 
       "mov r1, #4\n"
 
       "ble 1b\n"
-#endif
 
       "add sp, sp, #" RUY_STR(RUY_STACK_OFFSET_SIZE) "\n"
 
@@ -515,23 +513,34 @@ void BinaryKernelNeonOutOfOrder32BP4x4(BinaryKernelParams<4, 4, std::uint32_t>& 
         "q13", "q14", "q15" );
 }
 
-#undef RUY_OFFSET_BACKTRANSFORM_ADD
+#undef RUY_MAKE_ZERO
+#undef RUY_STACK_OFFSET_SIZE
+#undef RUY_STACK_OFFSET_DST_COL_PTR
+#undef RUY_STACK_OFFSET_DST_PTR
+#undef RUY_STACK_OFFSET_ROW
+#undef RUY_STACK_OFFSET_COL
+#undef RUY_STACK_OFFSET_LHS_COL_PTR
+#undef RUY_STACK_OFFSET_RHS_COL_PTR
+
+#undef RUY_OFFSET_LHS_BASE_PTR
+#undef RUY_OFFSET_RHS_BASE_PTR
+#undef RUY_OFFSET_DST_BASE_PTR
 #undef RUY_OFFSET_POST_ACTIVATION_MULTIPLIER
 #undef RUY_OFFSET_POST_ACTIVATION_BIAS
-#undef RUY_OFFSET_FLAGS
-#undef RUY_OFFSET_LHS_BASE_PTR
-#undef RUY_OFFSET_CLAMP_MIN
-#undef RUY_OFFSET_CLAMP_MAX
 #undef RUY_OFFSET_START_ROW
+#undef RUY_OFFSET_START_COL
 #undef RUY_OFFSET_LAST_ROW
 #undef RUY_OFFSET_LAST_COL
+#undef RUY_OFFSET_DST_ROWS
+#undef RUY_OFFSET_DST_COLS
 #undef RUY_OFFSET_LHS_STRIDE
 #undef RUY_OFFSET_RHS_STRIDE
 #undef RUY_OFFSET_DST_STRIDE
 #undef RUY_OFFSET_DEPTH
-#undef RUY_OFFSET_START_COL
-#undef RUY_OFFSET_RHS_BASE_PTR
-#undef RUY_OFFSET_DST_BASE_PTR
+#undef RUY_OFFSET_CLAMP_MIN
+#undef RUY_OFFSET_CLAMP_MAX
+#undef RUY_OFFSET_BACKTRANSFORM_ADD
+#undef RUY_OFFSET_FLAGS
 
 #endif  // RUY_PLATFORM(NEON_64) && RUY_OPT_ENABLED(RUY_OPT_ASM)
 #endif  // COMPUTE_EGNINE_TFLITE_KERNELS_BGEMM_KERNELS_ARM32_H_
