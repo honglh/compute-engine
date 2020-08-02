@@ -275,9 +275,18 @@ struct TestParam {
 };
 
 const auto kKernelMap = new std::map<string, register_function>({
-    {"BConv2D32REF", compute_engine::tflite::Register_BCONV_2D32_REF},
+#if defined TFLITE_WITH_RUY
+#if RUY_PLATFORM(ARM_32)
     {"BConv2D32OPT", compute_engine::tflite::Register_BCONV_2D32_OPT},
+#elif RUY_PLATFORM(ARM_64)
     {"BConv2D64OPT", compute_engine::tflite::Register_BCONV_2D64_OPT},
+#else
+    {"BConv2D32REF", compute_engine::tflite::Register_BCONV_2D32_REF},
+#endif
+#else
+    {"BConv2D32REF", compute_engine::tflite::Register_BCONV_2D32_REF},
+#endif
+
 });
 
 class BConv2DOpTest : public ::testing::TestWithParam<TestParamTuple> {
@@ -737,6 +746,7 @@ INSTANTIATE_TEST_SUITE_P(
         ValuesIn(BConv2DOpTest::GetKernelsTuples(*kKernelMap))),
     TestParam::TestNameSuffix);
 
+#if defined TFLITE_WITH_RUY && RUY_PLATFORM(ARM_64)
 // Separately, for 64-bit optimised kernels only, test a very large input
 // channels and filter size that would overflow 16-bit accumulators (to check
 // that we successfully fall back to the 32-bit accumulator kernels).
@@ -754,6 +764,7 @@ INSTANTIATE_TEST_SUITE_P(
         Values(std::pair<std::string, register_function>{
             "BConv2D64OPT", compute_engine::tflite::Register_BCONV_2D64_OPT})),
     TestParam::TestNameSuffix);
+#endif
 
 // The BigTest suite will be skipped in the qemu CI runs as they take more than
 // an hour.
