@@ -105,6 +105,18 @@ cc_library(
 )
 
 cc_library(
+    name = "bgemm_kernels_arm32",
+    hdrs = [
+        "bgemm_kernels_arm32.h",
+    ],
+    deps = [
+        ":bgemm_kernels_common",
+        "@org_tensorflow//tensorflow/lite/experimental/ruy/profiler:instrumentation",
+        "@org_tensorflow//tensorflow/lite/kernels/internal:round",
+    ],
+)
+
+cc_library(
     name = "bgemm_kernels_arm",
     hdrs = [
         "bgemm_kernels_arm.h",

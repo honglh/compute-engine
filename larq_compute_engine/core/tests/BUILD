@@ -36,6 +36,17 @@ test_suite(
 
 # CC tests for ARM32 architecture
 cc_test(
+    name = "bgemm_arm32_tests",
+    size = "small",
+    srcs = ["bgemm_arm32_tests.cc"],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "//larq_compute_engine/core:bgemm_functor",
+        "//larq_compute_engine/core:bgemm_kernels_arm32",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+cc_test(
     name = "packbits_arm32_tests",
     size = "small",
     srcs = ["packbits_arm32_tests.cc"],
@@ -50,6 +61,7 @@ cc_test(
 test_suite(
     name = "cc_tests_arm32",
     tests = [
+        "bgemm_arm32_tests",
         "packbits_arm32_tests",
     ],
 )
