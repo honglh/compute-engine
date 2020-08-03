@@ -27,8 +27,8 @@ using namespace ruy;
   "vpadd.i8 d29, d30, d31\n"           \
   "vpadd.i8 d24, d24, d25\n"           \
   "vpadd.i8 d25, d28, d29\n"           \
-  "vpaddl.s8 q12, q12\n"               \
-  "vpadal.s16 " #Vd" , q12\n"
+  "vpaddl.u8 q12, q12\n"               \
+  "vpadal.u16 " #Vd" , q12\n"
 
 // clang-format on
 
@@ -144,27 +144,27 @@ void BinaryKernelNeonOutOfOrder32BP4x4(
 #define RUY_MAKE_ZERO(reg) "vmov.i32 " #reg ", #0\n"
 
       "sub sp, sp, #" RUY_STR(RUY_STACK_OFFSET_SIZE) "\n"
-      //auto dst_col_ptr = params.dst_base_ptr;
+      // auto dst_col_ptr = params.dst_base_ptr;
       "ldr r1, [%[params], #" RUY_STR(RUY_OFFSET_DST_BASE_PTR) "]\n"
       "str r1, [sp, #" RUY_STR(RUY_STACK_OFFSET_DST_COL_PTR) "]\n"
 
-      //auto dst_ptr =  dst_col_ptr;
+      // auto dst_ptr = dst_col_ptr;
       "ldr r2, [%[params], #" RUY_STR(RUY_OFFSET_DST_BASE_PTR) "]\n"
       "str r2, [sp, #" RUY_STR(RUY_STACK_OFFSET_DST_PTR) "]\n"
 
-       //auto row = params.start_row
+      // auto row = params.start_row
       "ldr r1, [%[params], #" RUY_STR(RUY_OFFSET_START_ROW) "]\n"
       "str r1, [sp, #" RUY_STR(RUY_STACK_OFFSET_ROW) "]\n"
 
-       //auto col = params.start_col
+      // auto col = params.start_col
       "ldr r3, [%[params], #" RUY_STR(RUY_OFFSET_START_COL) "]\n"
       "str r3, [sp, #" RUY_STR(RUY_STACK_OFFSET_COL) "]\n"
 
-       //auto lhs_col_ptr = params.lhs_base_ptr
+      // auto lhs_col_ptr = params.lhs_base_ptr
       "ldr r1, [%[params], #" RUY_STR(RUY_OFFSET_LHS_BASE_PTR) "]\n"
       "str r1, [sp, #" RUY_STR(RUY_STACK_OFFSET_LHS_COL_PTR) "]\n"
 
-       //auto rhs_col_ptr = params.rhs_base_ptr
+      // auto rhs_col_ptr = params.rhs_base_ptr
       "ldr r2, [%[params], #" RUY_STR(RUY_OFFSET_RHS_BASE_PTR) "]\n"
       "str r2, [sp, #" RUY_STR(RUY_STACK_OFFSET_RHS_COL_PTR) "]\n"
 
@@ -475,7 +475,6 @@ void BinaryKernelNeonOutOfOrder32BP4x4(
       "20:\n"
       // Was already at end row.
       // Move back to first row.
-      //
       "str r6, [sp, #" RUY_STR(RUY_STACK_OFFSET_ROW) "]\n"
       // Move to the next column.
       "ldr r4, [sp, #" RUY_STR(RUY_STACK_OFFSET_COL) "]\n"
